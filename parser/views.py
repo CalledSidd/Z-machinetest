@@ -8,10 +8,20 @@ from rest_framework import status
 from rest_framework import filters 
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
 from . models import Car
 from . serializers import UploadSerializer, SaveSerialzier,CarSerializer
 
 # Create your views here.
+
+@api_view(['GET'])
+def getRoutes(request):
+    permission_classes = [AllowAny]
+    routes = [
+        'retreive',
+        'upload'
+    ]
+    return Response(routes)
 class UploadView(generics.CreateAPIView):
     serializer_class = UploadSerializer
     def post(self, request, *args, **kwargs):
@@ -40,5 +50,6 @@ class UploadView(generics.CreateAPIView):
 class GetCar(viewsets.ModelViewSet):
     queryset = Car.objects.all()[:50:1]
     serializer_class = CarSerializer
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ['name']
     ordering_fields = ['name']
